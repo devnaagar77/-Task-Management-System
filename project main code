@@ -1,0 +1,109 @@
+PHASE 1: Project Setup
+1. Tech Stack Decisions
+• Frontend: Next.js (React framework)
+• Backend: Express (simpler for quick setup) or NestJS (more scalable/structured)
+• Database: PostgreSQL (strong relational structure is good for users, tasks, assignments)
+• ORM: Prisma (with PostgreSQL) or TypeORM
+• Auth: JWT + bcrypt
+• Notifications: In-app (for now; optionally, add email with Nodemailer)
+ PHASE 2: Database Schema Design
+User Table
+ts
+CopyEdit
+User {
+ id: UUID (PK)
+ name: string
+ email: string (unique)
+ password: string (hashed)
+ createdAt: Date
+}
+Task Table
+ts
+CopyEdit
+Task {
+ id: UUID (PK)
+ title: string
+ description: string
+ dueDate: Date
+ priority: enum ('Low', 'Medium', 'High')
+ status: enum ('Pending', 'In Progress', 'Completed')
+ creatorId: UUID (FK to User)
+ assigneeId: UUID (FK to User)
+ createdAt: Date
+}
+Notification Table
+ts
+CopyEdit
+Notification {
+ id: UUID
+ userId: UUID (FK to User)
+ taskId: UUID (FK to Task)
+ type: enum ('TaskAssigned', etc.)
+ isRead: boolean
+ createdAt: Date
+}
+ PHASE 3: Backend (Express + PostgreSQL + Prisma Example)
+Setup:
+bash
+CopyEdit
+npm init -y
+npm install express prisma @prisma/client bcrypt jsonwebtoken cors dotenv
+npx prisma init
+Auth Routes:
+• POST /auth/register
+• POST /auth/login
+• Use bcrypt to hash passwords
+• Use JWT for login sessions
+Task Routes:
+• CRUD: /tasks (GET, POST, PUT, DELETE)
+• Filter/search via query params: /tasks?priority=High&status=Pending
+• Assigned/created: /tasks/assigned, /tasks/created
+Notification Routes:
+• GET /notifications (get unread)
+• PATCH /notifications/:id (mark as read)
+ PHASE 4: Frontend (Next.js)
+Setup:
+bash
+CopyEdit
+npx create-next-app task-manager
+npm install axios react-hook-form jwt-decode
+Pages/Components:
+• /login, /register
+• /dashboard
+• /tasks (Create/Edit Form, List view)
+• /notifications
+• Components: TaskCard, TaskForm, NotificationBell, Filters, SearchBar
+Auth:
+• Store JWT in HttpOnly cookie (secure)
+• Use getServerSideProps to fetch authenticated data
+• Middleware to protect routes
+ PHASE 5: Display Dashboard Logic:
+o Tasks assigned to user
+o Overdue tasks (dueDate < today && status != "Completed")
+ PHASE 6: Extra Features
+• Real-time notifications with WebSockets (optional)
+• Email notifications via Nodemailer (bonus)
+• Task history/logging (audit trail)
+ Version Control Tips
+• Use meaningful commits:
+o feat: add user registration API
+o fix: validate task due date
+o chore: setup prisma schema
+• Push code to GitHub, use a clean README:
+md
+CopyEdit
+# Task Manager
+## Tech Stack
+- Next.js
+- Express.js
+- PostgreSQL + Prisma
+- JWT Auth
+## Features
+- User registration & login
+- Full task CRUD
+- Assign tasks & get notified
+- Dashboard, filtering, search
+ Deployment (Optional)
+• Frontend: Vercel
+• Backend: Railway, Render, or Heroku
+• Database: Supabase (Postgres) or Neon
