@@ -1,0 +1,83 @@
+ 1. Initialize the Project
+bash
+Copy
+Edit
+npx create-next-app@latest frontend
+cd frontend
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+🎨 2. Tailwind Setup
+tailwind.config.js
+
+js
+Copy
+Edit
+module.exports = {
+  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+}
+styles/globals.css
+
+css
+Copy
+Edit
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+🗂 3. Page Structure (Inside /pages)
+index.tsx: Redirects or login page
+
+dashboard.tsx: User dashboard with tasks
+
+tasks/[id].tsx: Task details
+
+login.tsx / register.tsx: Auth forms
+
+🧾 Example: pages/login.tsx
+tsx
+Copy
+Edit
+import { useState } from 'react';
+import axios from 'axios';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      window.location.href = '/dashboard';
+    } catch (err) {
+      alert('Login failed!');
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 shadow-md rounded w-96">
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <input
+          className="w-full p-2 border mb-4"
+          type="email"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="w-full p-2 border mb-4"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          className="w-full bg-blue-500 text-white py-2 rounded"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+      </div>
+    </div>
+  );
+}
